@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <SFML\Graphics.hpp>
+#include <sstream>
 
 using namespace sf;
 
@@ -76,6 +77,42 @@ int main()
 	float cloud1Speed = 0.0f;
 	float cloud2Speed = 0.0f;
 	float cloud3Speed = 0.0f;
+
+	// Draw some text
+	int score = 0;
+	sf::Text messageText;
+	sf::Text scoreText;
+
+	// We need to choose a font
+	Font font;
+	font.loadFromFile("fonts/KOMIKAP_.ttf");
+
+	// Set the font to our message
+	messageText.setFont(font);
+	scoreText.setFont(font);
+
+	// Assign the actual message
+	messageText.setString("Press enter to start!");
+	scoreText.setString("Score = 0");
+
+	// Make it really big
+	messageText.setCharacterSize(75);
+	scoreText.setCharacterSize(100);
+
+	// Choose a color
+	messageText.setFillColor(Color::White);
+	scoreText.setFillColor(Color::White);
+
+	// Position the text
+	FloatRect textRect = messageText.getLocalBounds();
+	messageText.setOrigin(textRect.left +
+		textRect.width / 2.0f,
+		textRect.top +
+		textRect.height / 2.0f);
+	messageText.setPosition(1920 / 2.0f, 1080 / 2.0f);
+
+	scoreText.setPosition(20, 20);
+
 
 	// Variables to control time itself
 	Clock clock;
@@ -215,6 +252,12 @@ int main()
 					cloud3Active = false;
 				}
 			}
+
+			// Update the score text
+			std::stringstream ss;
+			ss << "Score = " << score;
+			scoreText.setString(ss.str());
+			
 		} // END if (!ispaused)
 
 		// Draw the scene
@@ -236,10 +279,19 @@ int main()
 		// Draw the bee
 		window.draw(spriteBee);
 
+		// Draw the score
+		window.draw(scoreText);
+
+		if (isPaused)
+		{
+			// Draw our message
+			window.draw(messageText);
+		}
+
 		// Show everything we just drew
 		window.display();
 		
 	}
-    return 0;
+	return 0;
 }
 
