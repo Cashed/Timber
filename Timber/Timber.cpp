@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <SFML\Graphics.hpp>
 #include <sstream>
+#include <SFML\Audio.hpp>
 
 using namespace sf;
 
@@ -202,6 +203,26 @@ int main()
 	// Control the player input
 	bool acceptInput = false;
 
+	// Prepare the sound
+	SoundBuffer chopBuffer;
+	chopBuffer.loadFromFile("sound/chop.wav");
+
+	Sound chop;
+	chop.setBuffer(chopBuffer);
+
+	SoundBuffer deathBuffer;
+	deathBuffer.loadFromFile("sound/death.wav");
+	
+	Sound death;
+	death.setBuffer(deathBuffer);
+
+	// Out of time
+	SoundBuffer ootBuffer;
+	ootBuffer.loadFromFile("sound/out_of_time.wav");
+	
+	Sound outOfTime;
+	outOfTime.setBuffer(ootBuffer);
+
 	// Variables to control time itself
 	Clock clock;
 
@@ -268,6 +289,7 @@ int main()
 			// First handle pressing the right cursor key
 			if (Keyboard::isKeyPressed(Keyboard::Right))
 			{
+				
 				// Make sure the player is on the right
 				playerSide = side::RIGHT;
 				score++;
@@ -288,6 +310,9 @@ int main()
 				logActive = true;
 
 				acceptInput = false;
+
+				// Play a chop sound
+				chop.play();
 			}
 
 			// Handle pressing the right cursor key
@@ -313,6 +338,9 @@ int main()
 				logActive = true;
 
 				acceptInput = false;
+
+				// Play a chop sound
+				chop.play();
 			}
 		}
 
@@ -345,6 +373,9 @@ int main()
 					textRect.top +
 					textRect.height / 2.0f);
 				messageText.setPosition(1920 / 2.0f, 1080 / 2.0f);
+
+				// Play out of time sound
+				outOfTime.play();
 			}
 
 			// Setup the bee
@@ -504,6 +535,34 @@ int main()
 					logActive = false;
 					spriteLog.setPosition(810, 720);
 				}
+			}
+
+			// Has the player been squished by a branch?
+			if (branchPositions[5] == playerSide)
+			{
+				// Death
+				isPaused = true;
+				acceptInput = false;
+
+				// Draw the gravestone
+				spriteRIP.setPosition(525, 760);
+
+				// Hide the player
+				spritePlayer.setPosition(2000, 660);
+
+				// Change the text of the message
+				messageText.setString("YOU GOT SQUISHED!!!");
+
+				// Center the text on the screen
+				FloatRect textRect = messageText.getLocalBounds();
+				messageText.setOrigin(textRect.left +
+					textRect.width / 2.0f,
+					textRect.top +
+					textRect.height / 2.0f);
+				messageText.setPosition(1920 / 2.0f, 1080 / 2.0f);
+
+				// Play death sound
+				death.play();
 			}
 			
 		} // END if (!ispaused)
